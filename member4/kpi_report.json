@@ -1,0 +1,30 @@
+{
+  "soar": {
+    "total_cases": 1,
+    "resolved_cases": 1,
+    "containment_success_rate_pct": 100.0,
+    "mean_mttr_seconds": 6.094
+  },
+  "selfplay": {
+    "total_rounds": 5,
+    "red_attack_success_rate_pct": 100.0,
+    "blue_correct_response_rate_pct": 100.0,
+    "blue_win_rate_pct": 100.0,
+    "mean_red_reward": 117.5,
+    "mean_blue_reward": 49.7
+  },
+  "apt_campaign": {
+    "total_stages": 6,
+    "campaign_duration_seconds": 9.294,
+    "mitre_technique_ids_covered": [
+      "T1592",
+      "T1566.001",
+      "T1003",
+      "T1021.002",
+      "T1053.005",
+      "T1041"
+    ],
+    "final_stage_result": "sdn_block_success"
+  },
+  "generated_at": "2026-08-18T15:59:53.425901"
+}

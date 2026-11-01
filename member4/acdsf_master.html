@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACDSF - Master Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #0d1b2a, #1b2d45);
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #1e3a5f;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+        .status-text {
+            color: #00ff88;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .panel {
+            background: #111a2e;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid #1e3050;
+        }
+
+        .panel h3 {
+            font-size: 14px;
+            color: #8899bb;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+        }
+        .kpi-card {
+            background: #0d1528;
+            padding: 14px 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #1a2640;
+        }
+        .kpi-card .label {
+            font-size: 11px;
+            color: #8899bb;
+            text-transform: uppercase;
+        }
+        .kpi-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* Sector Bars */
+        .sector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 20px;
+        }
+        .sector-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+        }
+        .sector-item .name {
+            font-size: 13px;
+            min-width: 85px;
+        }
+        .sector-item .bar-bg {
+            flex: 1;
+            height: 16px;
+            background: #1a2640;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .sector-item .bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.5s;
+        }
+        .sector-item .pct {
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Alerts */
+        .alert-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .alert-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .alert-list::-webkit-scrollbar-thumb {
+            background: #1e3050;
+            border-radius: 4px;
+        }
+        .alert-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #1a2640;
+            font-size: 13px;
+        }
+        .alert-row:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-critical {
+            background: #ff446622;
+            color: #ff4466;
+        }
+        .badge-high {
+            background: #ff883322;
+            color: #ff8833;
+        }
+        .badge-medium {
+            background: #ffbb3322;
+            color: #ffbb33;
+        }
+        .badge-resolved {
+            background: #00ff8822;
+            color: #00ff88;
+        }
+        .badge-investigating {
+            background: #ff883322;
+            color: #ff8833;
+        }
+
+        /* XAI */
+        .xai-content {
+            background: #0d1528;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* Topology Mini */
+        .topology-mini {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .topo-node {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #1e3050;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .topo-node .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* API Status */
+        .api-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .api-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            background: #0d1528;
+            border: 1px solid #1a2640;
+        }
+        .api-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-online {
+            background: #00ff88;
+        }
+        .dot-offline {
+            background: #ff4466;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #445577;
+            font-size: 12px;
+            margin-top: 20px;
+            padding: 12px;
+            border-top: 1px solid #1a2640;
+        }
+        .last-update {
+            color: #445577;
+            font-size: 11px;
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .green {
+            color: #00ff88;
+        }
+        .blue {
+            color: #00b4ff;
+        }
+        .yellow {
+            color: #ffbb33;
+        }
+        .red {
+            color: #ff4466;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .sector-grid {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🛡️ ACDSF · Master Command Center</h1>
+        <div class="status">
+            <span class="status-dot"></span>
+            <span class="status-text" id="statusText">All Systems Operational</span>
+        </div>
+    </div>
+
+    <!-- KPI GRID -->
+    <div class="panel full-width" style="padding:14px 18px;">
+        <div class="kpi-grid">
+            <div class="kpi-card"><div class="label">Detection Rate</div><div class="value green" id="detectionRate">--</div></div>
+            <div class="kpi-card"><div class="label">MTTD</div><div class="value blue" id="mttd">--</div></div>
+            <div class="kpi-card"><div class="label">MTTR</div><div class="value green" id="mttr">--</div></div>
+            <div class="kpi-card"><div class="label">Containment</div><div class="value green" id="containment">--</div></div>
+            <div class="kpi-card"><div class="label">Risk Score</div><div class="value yellow" id="riskScore">--</div></div>
+            <div class="kpi-card"><div class="label">Active Threats</div><div class="value red" id="activeThreats">--</div></div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dashboard-grid">
+
+        <!-- SECTOR HEALTH -->
+        <div class="panel">
+            <h3>🏢 Sector Health</h3>
+            <div class="sector-grid" id="sectorList">
+                <div class="sector-item"><span class="name">🏛 Government</span><div class="bar-bg"><div class="bar-fill green" id="govFill" style="width:50%"></div></div><span class="pct green" id="govPct">--</span></div>
+                <div class="sector-item"><span class="name">⚡ Energy</span><div class="bar-bg"><div class="bar-fill green" id="energyFill" style="width:50%"></div></div><span class="pct green" id="energyPct">--</span></div>
+                <div class="sector-item"><span class="name">💰 Finance</span><div class="bar-bg"><div class="bar-fill green" id="financeFill" style="width:50%"></div></div><span class="pct green" id="financePct">--</span></div>
+                <div class="sector-item"><span class="name">📡 Telecom</span><div class="bar-bg"><div class="bar-fill green" id="telecomFill" style="width:50%"></div></div><span class="pct green" id="telecomPct">--</span></div>
+                <div class="sector-item"><span class="name">💧 Water</span><div class="bar-bg"><div class="bar-fill green" id="waterFill" style="width:50%"></div></div><span class="pct green" id="waterPct">--</span></div>
+                <div class="sector-item"><span class="name">🚆 Transport</span><div class="bar-bg"><div class="bar-fill green" id="transportFill" style="width:50%"></div></div><span class="pct green" id="transportPct">--</span></div>
+            </div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="panel">
+            <h3>🚨 Recent Alerts</h3>
+            <div class="alert-list" id="alertFeed">
+                <div class="alert-row"><span style="color:#445577;">Loading alerts...</span></div>
+            </div>
+        </div>
+
+        <!-- XAI EXPLANATION -->
+        <div class="panel">
+            <h3>🧠 XAI Explanation</h3>
+            <div class="xai-content" id="xaiContent">
+                <div style="color:#445577;">Loading XAI data...</div>
+            </div>
+        </div>
+
+        <!-- TOPOLOGY MINI + API STATUS -->
+        <div class="panel">
+            <h3>🌐 Network Status</h3>
+            <div class="topology-mini" id="topologyMini">
+                <span style="color:#445577; font-size:13px;">Loading sectors...</span>
+            </div>
+            <div style="margin-top:12px; padding-top:12px; border-top:1px solid #1a2640;">
+                <h3 style="font-size:13px; color:#8899bb; margin-bottom:8px;">🔗 API Status</h3>
+                <div class="api-grid" id="apiStatus">
+                    <span style="color:#445577; font-size:13px;">Checking APIs...</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="last-update" id="lastUpdate">Last update: --</div>
+    <div class="footer">
+        ACDSF — AI-Powered Cyber Defence Simulation Framework &bull; Live Master Dashboard
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8010';
+
+        async function fetchData(endpoint) {
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${endpoint}:`, error);
+                return null;
+            }
+        }
+
+        function updateKPI(data) {
+            if (!data) return;
+            document.getElementById('detectionRate').textContent = data.detection_rate + '%';
+            document.getElementById('mttd').textContent = data.mttd + ' min';
+            document.getElementById('mttr').textContent = data.mttr + ' sec';
+            document.getElementById('containment').textContent = data.containment_success + '%';
+            document.getElementById('riskScore').textContent = data.risk_score;
+            document.getElementById('activeThreats').textContent = data.active_threats;
+        }
+
+        function updateSectors(data) {
+            if (!data) return;
+            const map = {
+                'Government': { fill: 'govFill', pct: 'govPct' },
+                'Energy': { fill: 'energyFill', pct: 'energyPct' },
+                'Finance': { fill: 'financeFill', pct: 'financePct' },
+                'Telecom': { fill: 'telecomFill', pct: 'telecomPct' },
+                'Water': { fill: 'waterFill', pct: 'waterPct' },
+                'Transport': { fill: 'transportFill', pct: 'transportPct' }
+            };
+            for (const [name, val] of Object.entries(data)) {
+                const el = map[name];
+                if (!el) continue;
+                const fill = document.getElementById(el.fill);
+                const pct = document.getElementById(el.pct);
+                const value = Math.round(val);
+                fill.style.width = value + '%';
+                pct.textContent = value + '%';
+                const color = value >= 80 ? 'green' : value >= 60 ? 'yellow' : 'red';
+                fill.className = 'bar-fill ' + color;
+                pct.className = 'pct ' + color;
+            }
+        }
+
+        function updateAlerts(data) {
+            if (!data || data.length === 0) {
+                document.getElementById('alertFeed').innerHTML =
+                    '<div class="alert-row"><span style="color:#445577;">No alerts</span></div>';
+                return;
+            }
+            const sevMap = { critical: 'badge-critical', high: 'badge-high', medium: 'badge-medium' };
+            const statMap = { Blocked: 'badge-resolved', Contained: 'badge-resolved', Investigating: 'badge-investigating' };
+            document.getElementById('alertFeed').innerHTML = data.slice(0, 6).map(a =>
+                `<div class="alert-row">
+                    <span>${a.time}</span>
+                    <span>${a.ip}</span>
+                    <span class="badge ${sevMap[a.severity] || 'badge-medium'}">${a.type}</span>
+                    <span class="badge ${statMap[a.status] || 'badge-investigating'}">${a.status}</span>
+                </div>`
+            ).join('');
+        }
+
+        function updateXAI(data) {
+            if (!data) {
+                document.getElementById('xaiContent').innerHTML = '<div style="color:#445577;">No XAI data</div>';
+                return;
+            }
+            const features = data.features.map(f =>
+                `<div style="color:${f.direction === 'increased' ? '#00ff88' : '#ff6644'};">
+                    ${f.direction === 'increased' ? '✅' : '❌'} ${f.name}: ${f.direction} by ${f.value.toFixed(2)}
+                </div>`
+            ).join('');
+            document.getElementById('xaiContent').innerHTML = `
+                <div style="color:#00ff88;">✅ ${data.decision} · ${data.confidence}% confidence</div>
+                ${features}
+            `;
+        }
+
+        function updateTopologyMini(data) {
+            if (!data) return;
+            const html = Object.entries(data).map(([name, val]) => {
+                const color = val >= 80 ? '#00ff88' : val >= 60 ? '#ffbb33' : '#ff4466';
+                return `<span class="topo-node"><span class="dot" style="background:${color};"></span> ${name} ${Math.round(val)}%</span>`;
+            }).join('');
+            document.getElementById('topologyMini').innerHTML = html;
+        }
+
+        function updateAPIStatus(data) {
+            if (!data) return;
+            const html = Object.entries(data).map(([name, info]) =>
+                `<span class="api-item">
+                    <span class="dot ${info.status === 'online' ? 'dot-online' : 'dot-offline'}"></span>
+                    ${name.toUpperCase()} (${info.port})
+                </span>`
+            ).join('');
+            document.getElementById('apiStatus').innerHTML = html;
+        }
+
+        async function refreshDashboard() {
+            const ts = new Date().toLocaleTimeString();
+
+            const kpis = await fetchData('/api/kpis');
+            updateKPI(kpis);
+
+            const sectors = await fetchData('/api/sectors');
+            updateSectors(sectors);
+            updateTopologyMini(sectors);
+
+            const alerts = await fetchData('/api/alerts');
+            updateAlerts(alerts);
+
+            const apis = await fetchData('/api/apis');
+            updateAPIStatus(apis);
+
+            const xai = await fetchData('/api/xai');
+            updateXAI(xai);
+
+            document.getElementById('lastUpdate').textContent = `Last update: ${ts}`;
+            document.getElementById('statusText').textContent = 'All Systems Operational';
+        }
+
+        // Initial load
+        refreshDashboard();
+
+        // Refresh every 3 seconds
+        setInterval(refreshDashboard, 3000);
+    </script>
+
+</body>
+</html>

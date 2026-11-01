@@ -1,0 +1,122 @@
+[
+  {
+    "round": 1,
+    "red": {
+      "actions": [
+        "query_asset_risk",
+        "scan_ports",
+        "query_threat_intel",
+        "dump_credentials",
+        "lateral_move",
+        "exfiltrate"
+      ],
+      "reward": 117.5,
+      "succeeded": true
+    },
+    "blue": {
+      "actions": [
+        "block_host"
+      ],
+      "reward": 49.7,
+      "ground_truth_compromised": true,
+      "correct": true
+    },
+    "winner": "BLUE"
+  },
+  {
+    "round": 2,
+    "red": {
+      "actions": [
+        "query_asset_risk",
+        "scan_ports",
+        "query_threat_intel",
+        "dump_credentials",
+        "lateral_move",
+        "exfiltrate"
+      ],
+      "reward": 117.5,
+      "succeeded": true
+    },
+    "blue": {
+      "actions": [
+        "block_host"
+      ],
+      "reward": 49.7,
+      "ground_truth_compromised": true,
+      "correct": true
+    },
+    "winner": "BLUE"
+  },
+  {
+    "round": 3,
+    "red": {
+      "actions": [
+        "query_asset_risk",
+        "scan_ports",
+        "query_threat_intel",
+        "dump_credentials",
+        "lateral_move",
+        "exfiltrate"
+      ],
+      "reward": 117.5,
+      "succeeded": true
+    },
+    "blue": {
+      "actions": [
+        "block_host"
+      ],
+      "reward": 49.7,
+      "ground_truth_compromised": true,
+      "correct": true
+    },
+    "winner": "BLUE"
+  },
+  {
+    "round": 4,
+    "red": {
+      "actions": [
+        "query_asset_risk",
+        "scan_ports",
+        "query_threat_intel",
+        "dump_credentials",
+        "lateral_move",
+        "exfiltrate"
+      ],
+      "reward": 117.5,
+      "succeeded": true
+    },
+    "blue": {
+      "actions": [
+        "block_host"
+      ],
+      "reward": 49.7,
+      "ground_truth_compromised": true,
+      "correct": true
+    },
+    "winner": "BLUE"
+  },
+  {
+    "round": 5,
+    "red": {
+      "actions": [
+        "query_asset_risk",
+        "scan_ports",
+        "query_threat_intel",
+        "dump_credentials",
+        "lateral_move",
+        "exfiltrate"
+      ],
+      "reward": 117.5,
+      "succeeded": true
+    },
+    "blue": {
+      "actions": [
+        "block_host"
+      ],
+      "reward": 49.7,
+      "ground_truth_compromised": true,
+      "correct": true
+    },
+    "winner": "BLUE"
+  }
+]

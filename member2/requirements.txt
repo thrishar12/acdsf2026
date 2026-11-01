@@ -1,0 +1,7 @@
+networkx
+matplotlib
+flask
+requests
+torch
+pandas
+numpy

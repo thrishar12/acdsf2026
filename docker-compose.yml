@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./acdsf-backend
+      dockerfile: Dockerfile
+    container_name: acdsf-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - FLASK_HOST=0.0.0.0
+      - PORT=3001
+      - FLASK_ENV=production
+      - CORS_ORIGIN=http://localhost:5173
+      - JWT_SECRET=sovereign_acdsf_jwt_production_key_2026_super_secure
+      - JWT_EXPIRY_HOURS=1
+    volumes:
+      - backend-data:/app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./acdsf-frontend
+      dockerfile: Dockerfile
+    container_name: acdsf-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:

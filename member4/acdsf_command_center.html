@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACDSF - Cyber Command Center</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #080c18;
+            color: #e8edf5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== ANIMATED BACKGROUND ===== */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-glow {
+            position: fixed;
+            top: -30%;
+            right: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(0, 212, 255, 0.06), transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            animation: glowMove 20s infinite alternate;
+        }
+        @keyframes glowMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(-30%, -20%);
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1528;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 30px;
+            background: rgba(13, 21, 40, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            margin-bottom: 20px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        .header-logo span {
+            font-weight: 400;
+            color: #4a6a8a;
+            -webkit-text-fill-color: #4a6a8a;
+        }
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 18px;
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 30px;
+        }
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+        .header-status .text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #00ff88;
+        }
+        .header-time {
+            font-size: 14px;
+            color: #4a6a8a;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px 20px;
+        }
+
+        /* ===== TOP KPI ROW ===== */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: rgba(13, 21, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(30, 48, 80, 0.5);
+            border-radius: 12px;
+            padding: 16px 18px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent, #00d4ff), transparent);
+            opacity: 0.5;
+        }
+        .kpi-card:hover {
+            border-color: var(--accent, #00d4ff);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        .kpi-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #4a6a8a;
+            font-weight: 600;
+        }
+        .kpi-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 4px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            color: var(--accent, #00d4ff);
+        }
+        .kpi-card .sub {
+            font-size: 11px;
+            color: #4a6a8a;
+            margin-top: 2px;
+        }
+        .kpi-card .trend {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ===== GRID LAYOUT ===== */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .grid-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== PANELS ===== */
+        .panel {
+            background: rgba(13, 21, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(30, 48, 80, 0.4);
+            border-radius: 12px;
+            padding: 18px 20px;
+            transition: border-color 0.3s;
+        }
+        .panel:hover {
+            border-color: rgba(0, 212, 255, 0.2);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .panel-header h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #4a6a8a;
+            font-weight: 700;
+        }
+        .panel-header .badge-count {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            background: rgba(255, 68, 102, 0.15);
+            color: #ff4466;
+            font-weight: 600;
+        }
+
+        /* ===== SECTOR BARS ===== */
+        .sector-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sector-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30, 48, 80, 0.2);
+        }
+        .sector-item:last-child {
+            border-bottom: none;
+        }
+        .sector-item .icon {
+            font-size: 20px;
+            width: 32px;
+        }
+        .sector-item .info {
+            flex: 1;
+        }
+        .sector-item .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .sector-item .bar-track {
+            height: 6px;
+            background: rgba(30, 48, 80, 0.4);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+        .sector-item .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        .sector-item .pct {
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 44px;
+            text-align: right;
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* ===== ALERTS ===== */
+        .alert-list {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(30, 48, 80, 0.15);
+            font-size: 13px;
+        }
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+        .alert-severity {
+            width: 6px;
+            height: 30px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .alert-item .time {
+            color: #4a6a8a;
+            font-size: 11px;
+            min-width: 65px;
+            font-family: 'Orbitron', monospace;
+        }
+        .alert-item .src {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: #8899bb;
+            min-width: 90px;
+        }
+        .alert-item .type {
+            flex: 1;
+            font-weight: 500;
+        }
+        .alert-item .status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+        .status-resolved {
+            background: rgba(0, 255, 136, 0.12);
+            color: #00ff88;
+        }
+        .status-investigating {
+            background: rgba(255, 187, 51, 0.12);
+            color: #ffbb33;
+        }
+        .status-blocked {
+            background: rgba(0, 212, 255, 0.12);
+            color: #00d4ff;
+        }
+        .severity-critical {
+            background: #ff4466;
+        }
+        .severity-high {
+            background: #ff8833;
+        }
+        .severity-medium {
+            background: #ffbb33;
+        }
+
+        /* ===== XAI ===== */
+        .xai-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid #00d4ff;
+        }
+        .xai-box .decision {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00ff88;
+        }
+        .xai-box .confidence {
+            font-size: 13px;
+            color: #4a6a8a;
+        }
+        .xai-feature {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(30, 48, 80, 0.1);
+        }
+        .xai-feature .name {
+            color: #8899bb;
+        }
+        .xai-feature .val {
+            font-weight: 600;
+        }
+        .xai-feature .up {
+            color: #00ff88;
+        }
+        .xai-feature .down {
+            color: #ff4466;
+        }
+
+        /* ===== TOPOLOGY MINI ===== */
+        .topo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .topo-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(30, 48, 80, 0.3);
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .topo-node:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+        .topo-node .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .topo-node .tname {
+            flex: 1;
+            font-weight: 500;
+        }
+        .topo-node .thealth {
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+        }
+
+        /* ===== API STATUS ===== */
+        .api-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .api-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(30, 48, 80, 0.3);
+        }
+        .api-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .api-pill.online {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+        .api-pill.online .dot {
+            background: #00ff88;
+        }
+        .api-pill.offline {
+            border-color: rgba(255, 68, 102, 0.3);
+        }
+        .api-pill.offline .dot {
+            background: #ff4466;
+        }
+
+        /* ===== THREAT METER ===== */
+        .threat-meter {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .threat-meter .meter-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(30, 48, 80, 0.4);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .threat-meter .meter-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        .threat-meter .meter-label {
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 16px;
+            color: #2a3a5a;
+            font-size: 12px;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(30, 48, 80, 0.2);
+            margin-top: 16px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .kpi-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 900px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+            .grid-3col {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-3col {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            .topo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-logo {
+                font-size: 16px;
+            }
+        }
+
+        /* ===== GLOW ANIMATIONS ===== */
+        .glow-green {
+            animation: glowGreen 2s infinite alternate;
+        }
+        @keyframes glowGreen {
+            0% {
+                box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            }
+        }
+        .glow-blue {
+            animation: glowBlue 2s infinite alternate;
+        }
+        @keyframes glowBlue {
+            0% {
+                box-shadow: 0 0 5px rgba(0, 212, 255, 0.1);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">ACDSF <span>· Command Center</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:20px;">
+            <div class="header-status">
+                <span class="pulse-dot"></span>
+                <span class="text" id="statusText">All Systems Nominal</span>
+            </div>
+            <span class="header-time" id="clockDisplay">--:--:--</span>
+        </div>
+    </header>
+
+    <!-- ===== CONTAINER ===== -->
+    <div class="container">
+
+        <!-- KPI ROW -->
+        <div class="kpi-row" id="kpiRow">
+            <div class="kpi-card" style="--accent:#00ff88;">
+                <div class="label">Detection Rate</div>
+                <div class="value" id="detectionRate">--</div>
+                <div class="trend green">↑ 4.2%</div>
+            </div>
+            <div class="kpi-card" style="--accent:#00d4ff;">
+                <div class="label">Mean Time to Detect</div>
+                <div class="value" id="mttd">--</div>
+                <div class="trend green">↓ 0.8s</div>
+            </div>
+            <div class="kpi-card" style="--accent:#00ff88;">
+                <div class="label">Mean Time to Respond</div>
+                <div class="value" id="mttr">--</div>
+                <div class="trend green">↓ 1.2s</div>
+            </div>
+            <div class="kpi-card" style="--accent:#00ff88;">
+                <div class="label">Containment Success</div>
+                <div class="value" id="containment">--</div>
+                <div class="trend green">✓ 100%</div>
+            </div>
+            <div class="kpi-card" style="--accent:#ffbb33;">
+                <div class="label">Risk Score</div>
+                <div class="value" id="riskScore">--</div>
+                <div class="trend yellow">● Monitoring</div>
+            </div>
+            <div class="kpi-card" style="--accent:#ff4466;">
+                <div class="label">Active Threats</div>
+                <div class="value" id="activeThreats">--</div>
+                <div class="trend" id="threatTrend" style="color:#4a6a8a;">No threats</div>
+            </div>
+        </div>
+
+        <!-- GRID 2-COL -->
+        <div class="grid-2col">
+
+            <!-- SECTOR HEALTH -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🏢 Sector Health</h3>
+                    <span class="badge-count" id="sectorCount">6 sectors</span>
+                </div>
+                <div class="sector-list" id="sectorList">
+                    <div class="sector-item"><span class="icon">🏛</span><div class="info"><div class="name">Government</div><div class="bar-track"><div class="bar-fill green" id="govFill" style="width:50%"></div></div></div><span class="pct green" id="govPct">--</span></div>
+                    <div class="sector-item"><span class="icon">⚡</span><div class="info"><div class="name">Energy</div><div class="bar-track"><div class="bar-fill green" id="energyFill" style="width:50%"></div></div></div><span class="pct green" id="energyPct">--</span></div>
+                    <div class="sector-item"><span class="icon">💰</span><div class="info"><div class="name">Finance</div><div class="bar-track"><div class="bar-fill green" id="financeFill" style="width:50%"></div></div></div><span class="pct green" id="financePct">--</span></div>
+                    <div class="sector-item"><span class="icon">📡</span><div class="info"><div class="name">Telecom</div><div class="bar-track"><div class="bar-fill green" id="telecomFill" style="width:50%"></div></div></div><span class="pct green" id="telecomPct">--</span></div>
+                    <div class="sector-item"><span class="icon">💧</span><div class="info"><div class="name">Water</div><div class="bar-track"><div class="bar-fill green" id="waterFill" style="width:50%"></div></div></div><span class="pct green" id="waterPct">--</span></div>
+                    <div class="sector-item"><span class="icon">🚆</span><div class="info"><div class="name">Transport</div><div class="bar-track"><div class="bar-fill green" id="transportFill" style="width:50%"></div></div></div><span class="pct green" id="transportPct">--</span></div>
+                </div>
+                <!-- Threat Meter -->
+                <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(30,48,80,0.2);">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:#4a6a8a; margin-bottom:4px;">
+                        <span>🛡️ Threat Level</span>
+                        <span id="threatLevelLabel">LOW</span>
+                    </div>
+                    <div class="threat-meter">
+                        <div class="meter-track">
+                            <div class="meter-fill" id="threatMeter" style="width:15%; background:linear-gradient(90deg,#00ff88,#ffbb33,#ff4466);"></div>
+                        </div>
+                        <span class="meter-label" id="threatMeterLabel">15%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALERTS -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🚨 Live Alert Feed</h3>
+                    <span class="badge-count" id="alertCount">0 alerts</span>
+                </div>
+                <div class="alert-list" id="alertFeed">
+                    <div style="text-align:center; color:#4a6a8a; padding:20px 0; font-size:13px;">Loading alerts...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID 3-COL -->
+        <div class="grid-3col">
+
+            <!-- XAI -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🧠 XAI Explanation</h3>
+                    <span style="font-size:10px; color:#4a6a8a;">SHAP</span>
+                </div>
+                <div class="xai-box" id="xaiContent">
+                    <div style="color:#4a6a8a; font-size:13px;">Loading explanation...</div>
+                </div>
+            </div>
+
+            <!-- TOPOLOGY -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🌐 Network Topology</h3>
+                    <span style="font-size:10px; color:#4a6a8a;">6 sectors</span>
+                </div>
+                <div class="topo-grid" id="topologyMini">
+                    <div style="grid-column:1/-1; text-align:center; color:#4a6a8a; padding:10px 0; font-size:13px;">Loading topology...</div>
+                </div>
+            </div>
+
+            <!-- API STATUS -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🔗 System Status</h3>
+                    <span style="font-size:10px; color:#4a6a8a;" id="apiCount">4 APIs</span>
+                </div>
+                <div class="api-grid" id="apiStatus">
+                    <span style="color:#4a6a8a; font-size:13px;">Checking APIs...</span>
+                </div>
+                <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(30,48,80,0.2); display:flex; justify-content:space-between; font-size:12px; color:#4a6a8a;">
+                    <span>📊 Last update</span>
+                    <span id="lastUpdate">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            ACDSF — AI-Powered Cyber Defence Simulation Framework &bull; Live Command Center &bull; v2.0
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        const API_URL = 'http://localhost:8010';
+
+        // ===== CLOCK =====
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ===== FETCH HELPER =====
+        async function fetchData(endpoint) {
+            try {
+                const res = await fetch(`${API_URL}${endpoint}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                console.error(`Error ${endpoint}:`, e);
+                return null;
+            }
+        }
+
+        // ===== UPDATE KPI =====
+        function updateKPI(d) {
+            if (!d) return;
+            document.getElementById('detectionRate').textContent = d.detection_rate + '%';
+            document.getElementById('mttd').textContent = d.mttd + ' min';
+            document.getElementById('mttr').textContent = d.mttr + ' sec';
+            document.getElementById('containment').textContent = d.containment_success + '%';
+            document.getElementById('riskScore').textContent = d.risk_score;
+            document.getElementById('activeThreats').textContent = d.active_threats;
+
+            const trend = document.getElementById('threatTrend');
+            if (d.active_threats === 0) {
+                trend.textContent = '✅ No threats';
+                trend.style.color = '#00ff88';
+            } else if (d.active_threats <= 2) {
+                trend.textContent = '⚠️ ' + d.active_threats + ' active';
+                trend.style.color = '#ffbb33';
+            } else {
+                trend.textContent = '🔴 ' + d.active_threats + ' active';
+                trend.style.color = '#ff4466';
+            }
+        }
+
+        // ===== UPDATE SECTORS =====
+        function updateSectors(d) {
+            if (!d) return;
+            const map = {
+                'Government': 'gov',
+                'Energy': 'energy',
+                'Finance': 'finance',
+                'Telecom': 'telecom',
+                'Water': 'water',
+                'Transport': 'transport'
+            };
+            let total = 0,
+                count = 0;
+            for (const [name, val] of Object.entries(d)) {
+                const key = map[name];
+                if (!key) continue;
+                const fill = document.getElementById(key + 'Fill');
+                const pct = document.getElementById(key + 'Pct');
+                const v = Math.round(val);
+                fill.style.width = v + '%';
+                pct.textContent = v + '%';
+                const c = v >= 80 ? 'green' : v >= 60 ? 'yellow' : 'red';
+                fill.className = 'bar-fill ' + c;
+                pct.className = 'pct ' + c;
+                total += v;
+                count++;
+            }
+            // Threat meter
+            const avg = count > 0 ? Math.round(total / count) : 50;
+            const threatPct = Math.max(0, 100 - avg);
+            document.getElementById('threatMeter').style.width = threatPct + '%';
+            document.getElementById('threatMeterLabel').textContent = threatPct + '%';
+            const label = threatPct < 20 ? '🟢 LOW' : threatPct < 40 ? '🟡 MEDIUM' : threatPct < 60 ? '🟠 HIGH' : '🔴 CRITICAL';
+            document.getElementById('threatLevelLabel').textContent = label;
+            document.getElementById('threatLevelLabel').style.color = threatPct < 20 ? '#00ff88' : threatPct < 40 ?
+                '#ffbb33' : threatPct < 60 ? '#ff8833' : '#ff4466';
+        }
+
+        // ===== UPDATE ALERTS =====
+        function updateAlerts(d) {
+            if (!d || d.length === 0) {
+                document.getElementById('alertFeed').innerHTML =
+                    '<div style="text-align:center;color:#4a6a8a;padding:20px 0;font-size:13px;">✅ No alerts</div>';
+                document.getElementById('alertCount').textContent = '0 alerts';
+                return;
+            }
+            document.getElementById('alertCount').textContent = d.length + ' alerts';
+            document.getElementById('alertFeed').innerHTML = d.slice(0, 8).map(a => {
+                const sevClass = a.severity === 'critical' ? 'severity-critical' : a.severity === 'high' ?
+                    'severity-high' : 'severity-medium';
+                const statClass = a.status === 'Blocked' || a.status === 'Contained' ? 'status-resolved' :
+                    'status-investigating';
+                return `<div class="alert-item">
+                    <div class="alert-severity ${sevClass}"></div>
+                    <span class="time">${a.time}</span>
+                    <span class="src">${a.ip}</span>
+                    <span class="type">${a.type}</span>
+                    <span class="status ${statClass}">${a.status}</span>
+                </div>`;
+            }).join('');
+        }
+
+        // ===== UPDATE XAI =====
+        function updateXAI(d) {
+            if (!d) {
+                document.getElementById('xaiContent').innerHTML =
+                    '<div style="color:#4a6a8a;font-size:13px;">No explanation available</div>';
+                return;
+            }
+            const features = d.features.map(f =>
+                `<div class="xai-feature">
+                    <span class="name">${f.name}</span>
+                    <span class="val ${f.direction === 'increased' ? 'up' : 'down'}">
+                        ${f.direction === 'increased' ? '↑' : '↓'} ${f.value.toFixed(2)}
+                    </span>
+                </div>`
+            ).join('');
+            document.getElementById('xaiContent').innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span class="decision">${d.decision}</span>
+                    <span class="confidence">${d.confidence}% confidence</span>
+                </div>
+                ${features}
+            `;
+        }
+
+        // ===== UPDATE TOPOLOGY MINI =====
+        function updateTopology(d) {
+            if (!d) {
+                document.getElementById('topologyMini').innerHTML =
+                    '<div style="grid-column:1/-1;text-align:center;color:#4a6a8a;padding:10px 0;font-size:13px;">No data</div>';
+                return;
+            }
+            const icons = { 'Government': '🏛', 'Energy': '⚡', 'Finance': '💰', 'Telecom': '📡', 'Water': '💧',
+            'Transport': '🚆' };
+            const html = Object.entries(d).map(([name, val]) => {
+                const v = Math.round(val);
+                const color = v >= 80 ? '#00ff88' : v >= 60 ? '#ffbb33' : '#ff4466';
+                return `<div class="topo-node">
+                    <span class="dot" style="background:${color};"></span>
+                    <span class="tname">${icons[name] || '●'} ${name}</span>
+                    <span class="thealth" style="color:${color};">${v}%</span>
+                </div>`;
+            }).join('');
+            document.getElementById('topologyMini').innerHTML = html;
+        }
+
+        // ===== UPDATE API STATUS =====
+        function updateAPI(d) {
+            if (!d) {
+                document.getElementById('apiStatus').innerHTML =
+                    '<span style="color:#4a6a8a;font-size:13px;">No API data</span>';
+                return;
+            }
+            const html = Object.entries(d).map(([name, info]) =>
+                `<span class="api-pill ${info.status === 'online' ? 'online' : 'offline'}">
+                    <span class="dot"></span>
+                    ${name.toUpperCase()} (${info.port})
+                </span>`
+            ).join('');
+            document.getElementById('apiStatus').innerHTML = html;
+            document.getElementById('apiCount').textContent = Object.keys(d).length + ' APIs';
+        }
+
+        // ===== REFRESH =====
+        async function refresh() {
+            const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('lastUpdate').textContent = ts;
+
+            const kpis = await fetchData('/api/kpis');
+            updateKPI(kpis);
+
+            const sectors = await fetchData('/api/sectors');
+            updateSectors(sectors);
+            updateTopology(sectors);
+
+            const alerts = await fetchData('/api/alerts');
+            updateAlerts(alerts);
+
+            const apis = await fetchData('/api/apis');
+            updateAPI(apis);
+
+            const xai = await fetchData('/api/xai');
+            updateXAI(xai);
+
+            document.getElementById('statusText').textContent = 'All Systems Nominal';
+        }
+
+        // ===== START =====
+        refresh();
+        setInterval(refresh, 3000);
+    </script>
+
+</body>
+</html>

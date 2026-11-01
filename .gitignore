@@ -1,0 +1,58 @@
+# ================================
+# ACDSF - Git Ignore
+# ================================
+
+# ---------- Python cache ----------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ---------- Environment secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Node dependencies ----------
+node_modules/
+
+# ---------- Build files ----------
+dist/
+build/
+.vite/
+
+# ---------- Python virtual environments ----------
+venv/
+.venv/
+env/
+
+# ---------- Databases ----------
+*.db
+*.sqlite
+*.sqlite3
+
+# ---------- Logs ----------
+*.log
+
+# ---------- Editor / IDE ----------
+.vscode/
+.idea/
+
+# ---------- Operating system ----------
+.DS_Store
+Thumbs.db
+
+# ---------- Large datasets ----------
+*.csv
+
+# ---------- Machine learning models ----------
+*.pkl
+*.pt
+
+# ---------- Generated datasets ----------
+member1/GeneratedLabelledFlows/
+member1/MachineLearningCSV/
+*.safetensors
+*.bin
+*.onnx
+*.h5

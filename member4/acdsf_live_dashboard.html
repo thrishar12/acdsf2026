@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACDSF - Live Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #0d1b2a, #1b2d45);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #1e3a5f;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+        .status-text {
+            color: #00ff88;
+            font-weight: 600;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: #111a2e;
+            padding: 20px 22px;
+            border-radius: 14px;
+            border: 1px solid #1e3050;
+            transition: 0.2s;
+        }
+        .card:hover {
+            border-color: #2a4a7a;
+        }
+        .card .label {
+            font-size: 13px;
+            color: #8899bb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card .value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+        .green {
+            color: #00ff88;
+        }
+        .blue {
+            color: #00b4ff;
+        }
+        .yellow {
+            color: #ffbb33;
+        }
+        .red {
+            color: #ff4466;
+        }
+        .purple {
+            color: #b388ff;
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .panel {
+            background: #111a2e;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #1e3050;
+        }
+        .panel h3 {
+            font-size: 16px;
+            color: #8899bb;
+            margin-bottom: 14px;
+            letter-spacing: 0.3px;
+        }
+        .sector-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .sector-bar .name {
+            width: 110px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .sector-bar .bar-bg {
+            flex: 1;
+            height: 20px;
+            background: #1a2640;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+        .sector-bar .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        .sector-bar .pct {
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 44px;
+            text-align: right;
+        }
+        .alert-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #1a2640;
+            font-size: 14px;
+        }
+        .alert-row:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-critical {
+            background: #ff446622;
+            color: #ff4466;
+        }
+        .badge-high {
+            background: #ff883322;
+            color: #ff8833;
+        }
+        .badge-medium {
+            background: #ffbb3322;
+            color: #ffbb33;
+        }
+        .badge-resolved {
+            background: #00ff8822;
+            color: #00ff88;
+        }
+        .badge-investigating {
+            background: #ff883322;
+            color: #ff8833;
+        }
+        .footer {
+            text-align: center;
+            color: #445577;
+            font-size: 13px;
+            margin-top: 30px;
+            padding: 10px;
+            border-top: 1px solid #1a2640;
+        }
+        .api-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .api-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #1a2640;
+        }
+        .api-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-online {
+            background: #00ff88;
+        }
+        .dot-offline {
+            background: #ff4466;
+        }
+        .last-update {
+            color: #445577;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        @media (max-width: 800px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            .sector-bar .name {
+                width: 80px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🛡️ ACDSF · Live Dashboard</h1>
+        <div class="status">
+            <span class="status-dot"></span>
+            <span class="status-text" id="statusText">Loading...</span>
+        </div>
+    </div>
+
+    <!-- KPI GRID -->
+    <div class="grid" id="kpiGrid">
+        <div class="card"><div class="label">Detection Rate</div><div class="value green" id="detectionRate">--</div></div>
+        <div class="card"><div class="label">Mean Time to Detect</div><div class="value blue" id="mttd">--</div></div>
+        <div class="card"><div class="label">Mean Time to Respond</div><div class="value green" id="mttr">--</div></div>
+        <div class="card"><div class="label">Containment Success</div><div class="value green" id="containment">--</div></div>
+        <div class="card"><div class="label">Overall Risk Score</div><div class="value yellow" id="riskScore">--</div></div>
+        <div class="card"><div class="label">Active Threats</div><div class="value red" id="activeThreats">--</div></div>
+    </div>
+
+    <!-- SECTOR HEALTH + ALERTS -->
+    <div class="two-col">
+        <div class="panel">
+            <h3>🏢 Sector Health Status</h3>
+            <div id="sectorList">
+                <div class="sector-bar"><span class="name">🏛 Government</span><div class="bar-bg"><div class="bar-fill green" id="govFill" style="width:50%"></div></div><span class="pct green" id="govPct">--</span></div>
+                <div class="sector-bar"><span class="name">⚡ Energy</span><div class="bar-bg"><div class="bar-fill green" id="energyFill" style="width:50%"></div></div><span class="pct green" id="energyPct">--</span></div>
+                <div class="sector-bar"><span class="name">💰 Finance</span><div class="bar-bg"><div class="bar-fill green" id="financeFill" style="width:50%"></div></div><span class="pct green" id="financePct">--</span></div>
+                <div class="sector-bar"><span class="name">📡 Telecom</span><div class="bar-bg"><div class="bar-fill green" id="telecomFill" style="width:50%"></div></div><span class="pct green" id="telecomPct">--</span></div>
+                <div class="sector-bar"><span class="name">💧 Water</span><div class="bar-bg"><div class="bar-fill green" id="waterFill" style="width:50%"></div></div><span class="pct green" id="waterPct">--</span></div>
+                <div class="sector-bar"><span class="name">🚆 Transport</span><div class="bar-bg"><div class="bar-fill green" id="transportFill" style="width:50%"></div></div><span class="pct green" id="transportPct">--</span></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>🚨 Recent Alerts</h3>
+            <div id="alertFeed">
+                <div class="alert-row"><span style="color:#445577;">Loading alerts...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API STATUS + XAI -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px;">
+        <div class="panel">
+            <h3>🧠 XAI Explanation</h3>
+            <div id="xaiContent" style="background:#0d1528; padding:16px; border-radius:10px; font-size:14px; line-height:1.8;">
+                <div style="color:#445577;">Loading XAI data...</div>
+            </div>
+        </div>
+        <div class="panel">
+            <h3>🔗 API Status</h3>
+            <div class="api-status" id="apiStatus">
+                <span style="color:#445577;">Checking APIs...</span>
+            </div>
+            <div class="last-update" id="lastUpdate">Last update: --</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        ACDSF — AI-Powered Cyber Defence Simulation Framework &bull; Live Demo
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8010';
+
+        async function fetchData(endpoint) {
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${endpoint}:`, error);
+                return null;
+            }
+        }
+
+        function updateKPI(kpiData) {
+            if (!kpiData) return;
+            document.getElementById('detectionRate').textContent = kpiData.detection_rate + '%';
+            document.getElementById('mttd').textContent = kpiData.mttd + ' min';
+            document.getElementById('mttr').textContent = kpiData.mttr + ' sec';
+            document.getElementById('containment').textContent = kpiData.containment_success + '%';
+            document.getElementById('riskScore').textContent = kpiData.risk_score;
+            document.getElementById('activeThreats').textContent = kpiData.active_threats;
+            document.getElementById('statusText').textContent = 'All Systems Operational';
+        }
+
+        function updateSectors(sectorData) {
+            if (!sectorData) return;
+            const sectors = {
+                'Government': { fill: 'govFill', pct: 'govPct' },
+                'Energy': { fill: 'energyFill', pct: 'energyPct' },
+                'Finance': { fill: 'financeFill', pct: 'financePct' },
+                'Telecom': { fill: 'telecomFill', pct: 'telecomPct' },
+                'Water': { fill: 'waterFill', pct: 'waterPct' },
+                'Transport': { fill: 'transportFill', pct: 'transportPct' }
+            };
+
+            for (const [name, data] of Object.entries(sectorData)) {
+                const el = sectors[name];
+                if (!el) continue;
+                const fill = document.getElementById(el.fill);
+                const pct = document.getElementById(el.pct);
+                const value = Math.round(data);
+                fill.style.width = value + '%';
+                pct.textContent = value + '%';
+
+                // Color based on value
+                const color = value >= 80 ? 'green' : value >= 60 ? 'yellow' : 'red';
+                fill.className = 'bar-fill ' + color;
+                pct.className = 'pct ' + color;
+            }
+        }
+
+        function updateAlerts(alerts) {
+            if (!alerts || alerts.length === 0) {
+                document.getElementById('alertFeed').innerHTML =
+                    '<div class="alert-row"><span style="color:#445577;">No alerts</span></div>';
+                return;
+            }
+
+            const severityMap = {
+                'critical': 'badge-critical',
+                'high': 'badge-high',
+                'medium': 'badge-medium'
+            };
+
+            const statusMap = {
+                'Blocked': 'badge-resolved',
+                'Contained': 'badge-resolved',
+                'Investigating': 'badge-investigating'
+            };
+
+            document.getElementById('alertFeed').innerHTML = alerts.slice(0, 6).map(a =>
+                `<div class="alert-row">
+                    <span>${a.time}</span>
+                    <span>${a.ip}</span>
+                    <span class="badge ${severityMap[a.severity] || 'badge-medium'}">${a.type}</span>
+                    <span class="badge ${statusMap[a.status] || 'badge-investigating'}">${a.status}</span>
+                </div>`
+            ).join('');
+        }
+
+        function updateAPIStatus(apiData) {
+            if (!apiData) return;
+            const html = Object.entries(apiData).map(([name, info]) =>
+                `<span class="api-badge">
+                    <span class="dot ${info.status === 'online' ? 'dot-online' : 'dot-offline'}"></span>
+                    ${name.toUpperCase()} (${info.port})
+                </span>`
+            ).join('');
+            document.getElementById('apiStatus').innerHTML = html;
+        }
+
+        function updateXAI(xaiData) {
+            if (!xaiData) {
+                document.getElementById('xaiContent').innerHTML = '<div style="color:#445577;">No XAI data available</div>';
+                return;
+            }
+            const features = xaiData.features.map(f =>
+                `<div style="color:${f.direction === 'increased' ? '#00ff88' : '#ff6644'};">
+                    ${f.direction === 'increased' ? '✅' : '❌'} ${f.name}: ${f.direction} suspicion by ${f.value.toFixed(2)}
+                </div>`
+            ).join('');
+
+            document.getElementById('xaiContent').innerHTML = `
+                <div style="color:#00ff88;">✅ Decision: ${xaiData.decision} · ${xaiData.confidence}% confidence</div>
+                ${features}
+                <div style="margin-top:12px; padding:12px; background:#0a1120; border-radius:8px; border-left:4px solid #00ff88; font-size:13px; color:#8899bb;">
+                    SHAP-based explanation · Model: RandomForest
+                </div>
+            `;
+        }
+
+        async function refreshDashboard() {
+            const timestamp = new Date().toLocaleTimeString();
+
+            const kpis = await fetchData('/api/kpis');
+            updateKPI(kpis);
+
+            const sectors = await fetchData('/api/sectors');
+            updateSectors(sectors);
+
+            const alerts = await fetchData('/api/alerts');
+            updateAlerts(alerts);
+
+            const apis = await fetchData('/api/apis');
+            updateAPIStatus(apis);
+
+            const xai = await fetchData('/api/xai');
+            updateXAI(xai);
+
+            document.getElementById('lastUpdate').textContent = `Last update: ${timestamp}`;
+        }
+
+        // Initial load
+        refreshDashboard();
+
+        // Auto-refresh every 5 seconds
+        setInterval(refreshDashboard, 5000);
+    </script>
+
+</body>
+</html>

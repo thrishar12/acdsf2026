@@ -1,0 +1,518 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "backbone_router",
+      "criticality": 10,
+      "id": "NBR-01"
+    },
+    {
+      "type": "router",
+      "sector": "Government",
+      "criticality": 9,
+      "id": "GOVE-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Government",
+      "criticality": 9,
+      "id": "GOVE-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Government",
+      "criticality": 7,
+      "id": "GOVE-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Government",
+      "criticality": 9,
+      "id": "GOVE-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Government",
+      "criticality": 9,
+      "id": "GOVE-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Government",
+      "criticality": 3,
+      "id": "GOVE-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Government",
+      "criticality": 3,
+      "id": "GOVE-PC2"
+    },
+    {
+      "type": "router",
+      "sector": "Energy",
+      "criticality": 10,
+      "id": "ENER-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Energy",
+      "criticality": 10,
+      "id": "ENER-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Energy",
+      "criticality": 8,
+      "id": "ENER-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Energy",
+      "criticality": 10,
+      "id": "ENER-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Energy",
+      "criticality": 10,
+      "id": "ENER-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Energy",
+      "criticality": 3,
+      "id": "ENER-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Energy",
+      "criticality": 3,
+      "id": "ENER-PC2"
+    },
+    {
+      "type": "router",
+      "sector": "Finance",
+      "criticality": 10,
+      "id": "FINA-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Finance",
+      "criticality": 10,
+      "id": "FINA-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Finance",
+      "criticality": 8,
+      "id": "FINA-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Finance",
+      "criticality": 10,
+      "id": "FINA-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Finance",
+      "criticality": 10,
+      "id": "FINA-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Finance",
+      "criticality": 3,
+      "id": "FINA-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Finance",
+      "criticality": 3,
+      "id": "FINA-PC2"
+    },
+    {
+      "type": "router",
+      "sector": "Telecom",
+      "criticality": 8,
+      "id": "TELE-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Telecom",
+      "criticality": 8,
+      "id": "TELE-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Telecom",
+      "criticality": 6,
+      "id": "TELE-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Telecom",
+      "criticality": 8,
+      "id": "TELE-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Telecom",
+      "criticality": 8,
+      "id": "TELE-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Telecom",
+      "criticality": 3,
+      "id": "TELE-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Telecom",
+      "criticality": 3,
+      "id": "TELE-PC2"
+    },
+    {
+      "type": "router",
+      "sector": "Water",
+      "criticality": 10,
+      "id": "WATE-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Water",
+      "criticality": 10,
+      "id": "WATE-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Water",
+      "criticality": 8,
+      "id": "WATE-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Water",
+      "criticality": 10,
+      "id": "WATE-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Water",
+      "criticality": 10,
+      "id": "WATE-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Water",
+      "criticality": 3,
+      "id": "WATE-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Water",
+      "criticality": 3,
+      "id": "WATE-PC2"
+    },
+    {
+      "type": "router",
+      "sector": "Transport",
+      "criticality": 7,
+      "id": "TRAN-CORE-R1"
+    },
+    {
+      "type": "firewall",
+      "sector": "Transport",
+      "criticality": 7,
+      "id": "TRAN-FW1"
+    },
+    {
+      "type": "switch",
+      "sector": "Transport",
+      "criticality": 5,
+      "id": "TRAN-SW1"
+    },
+    {
+      "type": "server",
+      "sector": "Transport",
+      "criticality": 7,
+      "id": "TRAN-SRV1"
+    },
+    {
+      "type": "server",
+      "sector": "Transport",
+      "criticality": 7,
+      "id": "TRAN-SRV2"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Transport",
+      "criticality": 3,
+      "id": "TRAN-PC1"
+    },
+    {
+      "type": "endpoint",
+      "sector": "Transport",
+      "criticality": 3,
+      "id": "TRAN-PC2"
+    }
+  ],
+  "edges": [
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "GOVE-CORE-R1"
+    },
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "ENER-CORE-R1"
+    },
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "FINA-CORE-R1"
+    },
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "TELE-CORE-R1"
+    },
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "WATE-CORE-R1"
+    },
+    {
+      "latency_ms": 5,
+      "bandwidth_mbps": 10000,
+      "source": "NBR-01",
+      "target": "TRAN-CORE-R1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-CORE-R1",
+      "target": "GOVE-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-FW1",
+      "target": "GOVE-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-SW1",
+      "target": "GOVE-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-SW1",
+      "target": "GOVE-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-SW1",
+      "target": "GOVE-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "GOVE-SW1",
+      "target": "GOVE-SRV2"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-CORE-R1",
+      "target": "ENER-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-FW1",
+      "target": "ENER-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-SW1",
+      "target": "ENER-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-SW1",
+      "target": "ENER-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-SW1",
+      "target": "ENER-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "ENER-SW1",
+      "target": "ENER-SRV2"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-CORE-R1",
+      "target": "FINA-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-FW1",
+      "target": "FINA-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-SW1",
+      "target": "FINA-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-SW1",
+      "target": "FINA-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-SW1",
+      "target": "FINA-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "FINA-SW1",
+      "target": "FINA-SRV2"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-CORE-R1",
+      "target": "TELE-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-FW1",
+      "target": "TELE-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-SW1",
+      "target": "TELE-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-SW1",
+      "target": "TELE-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-SW1",
+      "target": "TELE-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TELE-SW1",
+      "target": "TELE-SRV2"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-CORE-R1",
+      "target": "WATE-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-FW1",
+      "target": "WATE-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-SW1",
+      "target": "WATE-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-SW1",
+      "target": "WATE-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-SW1",
+      "target": "WATE-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "WATE-SW1",
+      "target": "WATE-SRV2"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-CORE-R1",
+      "target": "TRAN-FW1"
+    },
+    {
+      "latency_ms": 2,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-FW1",
+      "target": "TRAN-SW1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-SW1",
+      "target": "TRAN-PC1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-SW1",
+      "target": "TRAN-PC2"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-SW1",
+      "target": "TRAN-SRV1"
+    },
+    {
+      "latency_ms": 1,
+      "bandwidth_mbps": 1000,
+      "source": "TRAN-SW1",
+      "target": "TRAN-SRV2"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# ACDSF Backend – Production Requirements
+# Install: pip install -r requirements.txt
+
+# ── Core Web Framework ──────────────────────────────────────────────────────
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# ── Graph Processing ────────────────────────────────────────────────────────
+networkx>=3.0
+
+# ── Authentication & Security ───────────────────────────────────────────────
+PyJWT>=2.8.0
+werkzeug>=3.0.0          # provides generate_password_hash / check_password_hash
+python-dotenv>=1.0.0     # load .env files
+
+# ── Email (OTP / forgot-password) ──────────────────────────────────────────
+secure-smtplib; sys_platform == "win32"  # optional, falls back gracefully
+
+# ── Utilities ───────────────────────────────────────────────────────────────
+python-dateutil>=2.9.0

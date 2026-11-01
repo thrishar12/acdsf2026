@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACDSF - Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080c18;
+            color: #e8edf5;
+            min-height: 100vh;
+        }
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(13,21,40,0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 14px;
+            border: 1px solid rgba(0,212,255,0.1);
+            margin-bottom: 20px;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-logo span { -webkit-text-fill-color: #4a6a8a; font-weight: 400; }
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 16px 6px 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            border: 1px solid rgba(30,48,80,0.3);
+        }
+        .header-user .avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #080c18;
+        }
+        .header-user .name { font-size: 14px; font-weight: 600; }
+        .header-user .role {
+            font-size: 11px;
+            color: #4a6a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-user .logout {
+            color: #4a6a8a;
+            text-decoration: none;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(30,48,80,0.3);
+            transition: all 0.3s;
+        }
+        .header-user .logout:hover {
+            border-color: #ff4466;
+            color: #ff4466;
+        }
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        .status-text { font-size: 13px; color: #00ff88; font-weight: 600; }
+        .header-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            color: #4a6a8a;
+            letter-spacing: 1px;
+        }
+
+        /* KPI Row */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: rgba(13,21,40,0.8);
+            border: 1px solid rgba(30,48,80,0.4);
+            border-radius: 12px;
+            padding: 16px 18px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .kpi-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-2px); }
+        .kpi-card .label { font-size: 11px; text-transform: uppercase; color: #4a6a8a; letter-spacing: 0.8px; font-weight: 600; }
+        .kpi-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 4px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+        .kpi-card .sub { font-size: 11px; color: #4a6a8a; margin-top: 2px; }
+
+        /* Grid */
+        .grid-2col { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+        .panel {
+            background: rgba(13,21,40,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(30,48,80,0.3);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .panel-header h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #4a6a8a;
+            font-weight: 700;
+        }
+        .panel-header .badge {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            background: rgba(255,68,102,0.15);
+            color: #ff4466;
+            font-weight: 600;
+        }
+
+        /* Sectors */
+        .sector-list { display: flex; flex-direction: column; gap: 10px; }
+        .sector-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(30,48,80,0.15);
+        }
+        .sector-item:last-child { border-bottom: none; }
+        .sector-item .icon { font-size: 20px; width: 32px; }
+        .sector-item .info { flex: 1; }
+        .sector-item .name { font-size: 13px; font-weight: 600; }
+        .sector-item .bar-track {
+            height: 6px;
+            background: rgba(30,48,80,0.4);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+        .sector-item .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        .sector-item .pct {
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 44px;
+            text-align: right;
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* Alerts */
+        .alert-list { max-height: 260px; overflow-y: auto; }
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(30,48,80,0.15);
+            font-size: 13px;
+        }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-severity {
+            width: 4px;
+            height: 28px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .alert-item .time { color: #4a6a8a; font-size: 11px; min-width: 65px; font-family: 'Orbitron', monospace; }
+        .alert-item .src { font-family: 'Orbitron', monospace; font-size: 12px; color: #8899bb; min-width: 90px; }
+        .alert-item .type { flex: 1; font-weight: 500; }
+        .alert-item .status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+        .status-resolved { background: rgba(0,255,136,0.12); color: #00ff88; }
+        .status-investigating { background: rgba(255,187,51,0.12); color: #ffbb33; }
+        .status-blocked { background: rgba(0,212,255,0.12); color: #00d4ff; }
+        .severity-critical { background: #ff4466; }
+        .severity-high { background: #ff8833; }
+        .severity-medium { background: #ffbb33; }
+
+        /* XAI */
+        .xai-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid #00d4ff;
+        }
+        .xai-box .decision { font-size: 16px; font-weight: 700; color: #00ff88; }
+        .xai-box .confidence { font-size: 13px; color: #4a6a8a; }
+        .xai-feature {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(30,48,80,0.1);
+        }
+        .xai-feature .name { color: #8899bb; }
+        .xai-feature .val { font-weight: 600; }
+        .xai-feature .up { color: #00ff88; }
+        .xai-feature .down { color: #ff4466; }
+
+        /* Topology */
+        .topo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .topo-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(30,48,80,0.3);
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .topo-node:hover { border-color: rgba(0,212,255,0.3); }
+        .topo-node .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .topo-node .tname { flex: 1; font-weight: 500; }
+        .topo-node .thealth { font-weight: 700; font-family: 'Orbitron', monospace; font-size: 12px; }
+
+        /* API */
+        .api-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .api-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(30,48,80,0.3);
+        }
+        .api-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .api-pill.online { border-color: rgba(0,255,136,0.3); }
+        .api-pill.online .dot { background: #00ff88; }
+        .api-pill.offline { border-color: rgba(255,68,102,0.3); }
+        .api-pill.offline .dot { background: #ff4466; }
+
+        .footer {
+            text-align: center;
+            padding: 16px;
+            color: #2a3a5a;
+            font-size: 12px;
+            border-top: 1px solid rgba(30,48,80,0.15);
+            margin-top: 16px;
+        }
+        .last-update {
+            color: #4a6a8a;
+            font-size: 11px;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .green { color: #00ff88; }
+        .blue { color: #00d4ff; }
+        .yellow { color: #ffbb33; }
+        .red { color: #ff4466; }
+
+        @media (max-width: 1200px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .grid-2col { grid-template-columns: 1fr; } .grid-3col { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) {
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .grid-3col { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 10px; text-align: center; }
+            .topo-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-logo { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="header-logo">ACDSF <span>· Command Center</span></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div class="header-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live</span>
+                </div>
+                <span class="header-time" id="clockDisplay">--:--:--</span>
+                <div class="header-user">
+                    <div class="avatar">{{ user.username[0].upper() }}</div>
+                    <div>
+                        <div class="name">{{ user.username }}</div>
+                        <div class="role">{{ user.role }}</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Row -->
+        <div class="kpi-row">
+            <div class="kpi-card"><div class="label">Detection Rate</div><div class="value green" id="detectionRate">--</div></div>
+            <div class="kpi-card"><div class="label">Mean Time to Detect</div><div class="value blue" id="mttd">--</div></div>
+            <div class="kpi-card"><div class="label">Mean Time to Respond</div><div class="value green" id="mttr">--</div></div>
+            <div class="kpi-card"><div class="label">Containment Success</div><div class="value green" id="containment">--</div></div>
+            <div class="kpi-card"><div class="label">Risk Score</div><div class="value yellow" id="riskScore">--</div></div>
+            <div class="kpi-card"><div class="label">Active Threats</div><div class="value red" id="activeThreats">--</div></div>
+        </div>
+
+        <!-- 2-Column Grid -->
+        <div class="grid-2col">
+            <!-- Sectors -->
+            <div class="panel">
+                <div class="panel-header"><h3>🏢 Sector Health</h3><span class="badge">6 sectors</span></div>
+                <div class="sector-list" id="sectorList">
+                    {% for name, health in sectors.items() %}
+                    <div class="sector-item">
+                        <span class="icon">
+                            {% if name == 'Government' %}🏛
+                            {% elif name == 'Energy' %}⚡
+                            {% elif name == 'Finance' %}💰
+                            {% elif name == 'Telecom' %}📡
+                            {% elif name == 'Water' %}💧
+                            {% elif name == 'Transport' %}🚆
+                            {% else %}●{% endif %}
+                        </span>
+                        <div class="info">
+                            <div class="name">{{ name }}</div>
+                            <div class="bar-track">
+                                <div class="bar-fill {% if health >= 80 %}green{% elif health >= 60 %}yellow{% else %}red{% endif %}" style="width:{{ health }}%"></div>
+                            </div>
+                        </div>
+                        <span class="pct {% if health >= 80 %}green{% elif health >= 60 %}yellow{% else %}red{% endif %}">{{ health }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="panel">
+                <div class="panel-header"><h3>🚨 Live Alerts</h3><span class="badge">{{ alerts|length }} alerts</span></div>
+                <div class="alert-list">
+                    {% for alert in alerts %}
+                    <div class="alert-item">
+                        <div class="alert-severity severity-{{ alert.severity }}"></div>
+                        <span class="time">{{ alert.time }}</span>
+                        <span class="src">{{ alert.ip }}</span>
+                        <span class="type">{{ alert.type }}</span>
+                        <span class="status {% if alert.status == 'Blocked' or alert.status == 'Contained' %}status-resolved{% else %}status-investigating{% endif %}">{{ alert.status }}</span>
+                    </div>
+                    {% else %}
+                    <div style="text-align:center; color:#4a6a8a; padding:20px 0;">No alerts</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 3-Column Grid -->
+        <div class="grid-3col">
+            <!-- XAI -->
+            <div class="panel">
+                <div class="panel-header"><h3>🧠 XAI Explanation</h3><span style="font-size:10px;color:#4a6a8a;">SHAP</span></div>
+                <div class="xai-box">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <span class="decision">{{ xai.decision if xai else 'N/A' }}</span>
+                        <span class="confidence">{{ xai.confidence if xai else 0 }}% confidence</span>
+                    </div>
+                    {% if xai and xai.features %}
+                        {% for f in xai.features %}
+                        <div class="xai-feature">
+                            <span class="name">{{ f.name }}</span>
+                            <span class="val {{ 'up' if f.direction == 'increased' else 'down' }}">
+                                {{ '↑' if f.direction == 'increased' else '↓' }} {{ f.value }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="color:#4a6a8a;font-size:13px;">No explanation available</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Topology -->
+            <div class="panel">
+                <div class="panel-header"><h3>🌐 Network Topology</h3><span style="font-size:10px;color:#4a6a8a;">6 sectors</span></div>
+                <div class="topo-grid">
+                    {% for name, health in sectors.items() %}
+                    <div class="topo-node">
+                        <span class="dot" style="background:{% if health >= 80 %}#00ff88{% elif health >= 60 %}#ffbb33{% else %}#ff4466{% endif %};"></span>
+                        <span class="tname">
+                            {% if name == 'Government' %}🏛
+                            {% elif name == 'Energy' %}⚡
+                            {% elif name == 'Finance' %}💰
+                            {% elif name == 'Telecom' %}📡
+                            {% elif name == 'Water' %}💧
+                            {% elif name == 'Transport' %}🚆
+                            {% else %}●{% endif %}
+                            {{ name }}
+                        </span>
+                        <span class="thealth" style="color:{% if health >= 80 %}#00ff88{% elif health >= 60 %}#ffbb33{% else %}#ff4466{% endif %};">{{ health }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- API Status -->
+            <div class="panel">
+                <div class="panel-header"><h3>🔗 System Status</h3><span style="font-size:10px;color:#4a6a8a;">4 APIs</span></div>
+                <div class="api-grid">
+                    <span class="api-pill online"><span class="dot"></span> SDN (8000)</span>
+                    <span class="api-pill online"><span class="dot"></span> TTP (8001)</span>
+                    <span class="api-pill online"><span class="dot"></span> KG (8002)</span>
+                    <span class="api-pill online"><span class="dot"></span> SOAR (9000)</span>
+                </div>
+                <div class="last-update" id="lastUpdate">Last update: {{ last_update or '--' }}</div>
+            </div>
+        </div>
+
+        <div class="footer">ACDSF — AI-Powered Cyber Defence Simulation Framework &bull; {{ user.username }}@{{ user.role }}</div>
+    </div>
+
+    <script>
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Live data updates
+        async function fetchLiveData() {
+            try {
+                const res = await fetch('/api/live-data');
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+
+                // Update KPIs
+                if (data.kpis) {
+                    document.getElementById('detectionRate').textContent = data.kpis.detection_rate + '%';
+                    document.getElementById('mttd').textContent = data.kpis.mttd + ' min';
+                    document.getElementById('mttr').textContent = data.kpis.mttr + ' sec';
+                    document.getElementById('containment').textContent = data.kpis.containment_success + '%';
+                    document.getElementById('riskScore').textContent = data.kpis.risk_score;
+                    document.getElementById('activeThreats').textContent = data.kpis.active_threats;
+                }
+
+                // Update sectors
+                if (data.sectors) {
+                    const sectors = data.sectors;
+                    const items = document.querySelectorAll('.sector-item');
+                    items.forEach(item => {
+                        const nameEl = item.querySelector('.name');
+                        if (!nameEl) return;
+                        const name = nameEl.textContent.trim();
+                        if (sectors[name] !== undefined) {
+                            const val = Math.round(sectors[name]);
+                            const fill = item.querySelector('.bar-fill');
+                            const pct = item.querySelector('.pct');
+                            if (fill) {
+                                fill.style.width = val + '%';
+                                fill.className = 'bar-fill ' + (val >= 80 ? 'green' : val >= 60 ? 'yellow' : 'red');
+                            }
+                            if (pct) {
+                                pct.textContent = val + '%';
+                                pct.className = 'pct ' + (val >= 80 ? 'green' : val >= 60 ? 'yellow' : 'red');
+                            }
+                        }
+                    });
+
+                    // Update topology mini
+                    const topoNodes = document.querySelectorAll('.topo-node');
+                    const icons = { 'Government': '🏛', 'Energy': '⚡', 'Finance': '💰', 'Telecom': '📡', 'Water': '💧', 'Transport': '🚆' };
+                    topoNodes.forEach(node => {
+                        const tname = node.querySelector('.tname');
+                        if (!tname) return;
+                        const name = tname.textContent.replace(/[🏛⚡💰📡💧🚆●]/g, '').trim();
+                        if (sectors[name] !== undefined) {
+                            const val = Math.round(sectors[name]);
+                            const dot = node.querySelector('.dot');
+                            const thealth = node.querySelector('.thealth');
+                            const color = val >= 80 ? '#00ff88' : val >= 60 ? '#ffbb33' : '#ff4466';
+                            if (dot) dot.style.background = color;
+                            if (thealth) {
+                                thealth.textContent = val + '%';
+                                thealth.style.color = color;
+                            }
+                        }
+                    });
+                }
+
+                // Update alerts
+                if (data.alerts) {
+                    const alertList = document.querySelector('.alert-list');
+                    if (alertList) {
+                        alertList.innerHTML = data.alerts.slice(0, 6).map(a =>
+                            `<div class="alert-item">
+                                <div class="alert-severity severity-${a.severity}"></div>
+                                <span class="time">${a.time}</span>
+                                <span class="src">${a.ip}</span>
+                                <span class="type">${a.type}</span>
+                                <span class="status ${a.status === 'Blocked' || a.status === 'Contained' ? 'status-resolved' : 'status-investigating'}">${a.status}</span>
+                            </div>`
+                        ).join('');
+                    }
+                }
+
+                // Update XAI
+                if (data.xai) {
+                    const xaiBox = document.querySelector('.xai-box');
+                    if (xaiBox) {
+                        const features = data.xai.features.map(f =>
+                            `<div class="xai-feature">
+                                <span class="name">${f.name}</span>
+                                <span class="val ${f.direction === 'increased' ? 'up' : 'down'}">
+                                    ${f.direction === 'increased' ? '↑' : '↓'} ${f.value.toFixed(2)}
+                                </span>
+                            </div>`
+                        ).join('');
+                        xaiBox.innerHTML = `
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                                <span class="decision">${data.xai.decision}</span>
+                                <span class="confidence">${data.xai.confidence}% confidence</span>
+                            </div>
+                            ${features}
+                        `;
+                    }
+                }
+
+                if (data.last_update) {
+                    document.getElementById('lastUpdate').textContent = 'Last update: ' + data.last_update;
+                }
+
+            } catch (e) {
+                console.log('Live update error:', e);
+            }
+        }
+
+        // Update every 3 seconds
+        fetchLiveData();
+        setInterval(fetchLiveData, 3000);
+    </script>
+</body>
+</html>

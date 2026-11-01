@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ACDSF - Real Dashboard</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; background:#080c18; color:white; padding:20px; }
+        .header { background:rgba(13,21,40,0.9); padding:20px; border-radius:12px; margin-bottom:20px; border:1px solid rgba(0,212,255,0.2); }
+        .header h1 { background:linear-gradient(135deg,#00d4ff,#00ff88); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .status { color:#00ff88; font-size:14px; }
+        .kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px; }
+        .kpi-card { background:rgba(13,21,40,0.8); padding:16px; border-radius:10px; text-align:center; border:1px solid rgba(30,48,80,0.3); }
+        .kpi-card .label { font-size:11px; color:#4a6a8a; text-transform:uppercase; }
+        .kpi-card .value { font-size:28px; font-weight:bold; margin-top:4px; }
+        .green { color:#00ff88; }
+        .yellow { color:#ffbb33; }
+        .red { color:#ff4466; }
+        .blue { color:#00d4ff; }
+        .row { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; margin-bottom:16px; }
+        .panel { background:rgba(13,21,40,0.8); padding:18px; border-radius:10px; border:1px solid rgba(30,48,80,0.3); }
+        .panel h3 { color:#4a6a8a; font-size:12px; text-transform:uppercase; margin-bottom:12px; }
+        .sector { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid rgba(30,48,80,0.1); }
+        .sector .bar { flex:1; height:6px; background:rgba(30,48,80,0.4); border-radius:4px; overflow:hidden; }
+        .sector .fill { height:100%; border-radius:4px; transition:width 0.5s; }
+        .sector .pct { font-weight:bold; min-width:40px; text-align:right; }
+        .alert { display:flex; gap:10px; padding:6px 0; border-bottom:1px solid rgba(30,48,80,0.1); font-size:13px; }
+        .alert .time { color:#4a6a8a; min-width:70px; }
+        .badge { padding:2px 12px; border-radius:12px; font-size:11px; font-weight:600; }
+        .badge-resolved { background:rgba(0,255,136,0.15); color:#00ff88; }
+        .badge-investigating { background:rgba(255,187,51,0.15); color:#ffbb33; }
+        .badge-blocked { background:rgba(0,212,255,0.15); color:#00d4ff; }
+        .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+        .footer { text-align:center; padding:16px; color:#2a3a5a; font-size:12px; margin-top:16px; border-top:1px solid rgba(30,48,80,0.1); }
+        .update-time { color:#4a6a8a; font-size:11px; margin-top:8px; }
+        @media (max-width:900px) { .kpi-grid { grid-template-columns:repeat(3,1fr); } .row { grid-template-columns:1fr; } .row3 { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🛡️ ACDSF - Real-Time Command Center</h1>
+    <div class="status">🟢 All Systems Online | <span id="updateTime">Loading...</span></div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card"><div class="label">Detection Rate</div><div class="value green" id="detectionRate">--</div></div>
+    <div class="kpi-card"><div class="label">MTTD</div><div class="value blue" id="mttd">--</div></div>
+    <div class="kpi-card"><div class="label">MTTR</div><div class="value green" id="mttr">--</div></div>
+    <div class="kpi-card"><div class="label">Containment</div><div class="value green" id="containment">--</div></div>
+    <div class="kpi-card"><div class="label">Risk Score</div><div class="value yellow" id="riskScore">--</div></div>
+    <div class="kpi-card"><div class="label">Active Threats</div><div class="value red" id="activeThreats">--</div></div>
+</div>
+
+<div class="row">
+    <div class="panel">
+        <h3>🏢 Sector Health</h3>
+        <div id="sectors"></div>
+    </div>
+    <div class="panel">
+        <h3>🚨 Recent Alerts</h3>
+        <div id="alerts"></div>
+    </div>
+</div>
+
+<div class="row3">
+    <div class="panel">
+        <h3>🧠 XAI Explanation</h3>
+        <div id="xai"></div>
+    </div>
+    <div class="panel">
+        <h3>🔗 API Status</h3>
+        <div id="apis">
+            <div style="padding:4px 0;">✅ SDN (8000) - Online</div>
+            <div style="padding:4px 0;">✅ TTP (8001) - Online</div>
+            <div style="padding:4px 0;">✅ KG (8002) - Online</div>
+            <div style="padding:4px 0;">✅ SOAR (9000) - Online</div>
+        </div>
+    </div>
+    <div class="panel">
+        <h3>📊 System Info</h3>
+        <div style="font-size:13px; line-height:2;">
+            <div>🖥️ 6 Sectors Monitored</div>
+            <div>🛡️ AI Agents: Active</div>
+            <div>📈 Uptime: 100%</div>
+            <div id="sectorCount">📊 Data: Loading...</div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">ACDSF — AI-Powered Cyber Defence Simulation Framework | Real Data from Live Services</div>
+
+<script>
+const API_URL = 'http://localhost:8010';
+
+async function fetchData(endpoint) {
+    try {
+        const res = await fetch(`${API_URL}${endpoint}`);
+        if (!res.ok) throw new Error('API error');
+        return await res.json();
+    } catch (e) {
+        console.log('API not available, using fallback');
+        return null;
+    }
+}
+
+function updateDashboard() {
+    const now = new Date().toLocaleTimeString();
+    document.getElementById('updateTime').textContent = 'Updated: ' + now;
+
+    // Fetch real data
+    fetchData('/api/kpis').then(data => {
+        if (data) {
+            document.getElementById('detectionRate').textContent = data.detection_rate + '%';
+            document.getElementById('mttd').textContent = data.mttd + ' min';
+            document.getElementById('mttr').textContent = data.mttr + ' sec';
+            document.getElementById('containment').textContent = data.containment_success + '%';
+            document.getElementById('riskScore').textContent = data.risk_score;
+            document.getElementById('activeThreats').textContent = data.active_threats;
+        }
+    });
+
+    fetchData('/api/sectors').then(data => {
+        if (data) {
+            const sectorNames = {
+                'Government': '🏛',
+                'Energy': '⚡',
+                'Finance': '💰',
+                'Telecom': '📡',
+                'Water': '💧',
+                'Transport': '🚆'
+            };
+            let html = '';
+            let total = 0, count = 0;
+            for (const [name, health] of Object.entries(data)) {
+                const icon = sectorNames[name] || '●';
+                const color = health >= 80 ? 'green' : health >= 60 ? 'yellow' : 'red';
+                html += `<div class="sector">
+                    <span>${icon}</span>
+                    <span style="min-width:80px;">${name}</span>
+                    <div class="bar"><div class="fill ${color}" style="width:${health}%"></div></div>
+                    <span class="pct ${color}">${Math.round(health)}%</span>
+                </div>`;
+                total += health;
+                count++;
+            }
+            document.getElementById('sectors').innerHTML = html;
+            document.getElementById('sectorCount').textContent = `📊 ${count} Sectors · Avg ${Math.round(total/count)}%`;
+        }
+    });
+
+    fetchData('/api/alerts').then(data => {
+        if (data && data.length > 0) {
+            const html = data.slice(0, 5).map(a => `
+                <div class="alert">
+                    <span class="time">${a.time}</span>
+                    <span>${a.ip}</span>
+                    <span style="flex:1;">${a.type}</span>
+                    <span class="badge badge-${a.status === 'Blocked' || a.status === 'Contained' ? 'resolved' : 'investigating'}">${a.status}</span>
+                </div>
+            `).join('');
+            document.getElementById('alerts').innerHTML = html;
+        }
+    });
+
+    fetchData('/api/xai').then(data => {
+        if (data) {
+            let html = `<div><strong style="color:#00ff88;">${data.decision}</strong> (${data.confidence}% confidence)</div>`;
+            if (data.features) {
+                data.features.forEach(f => {
+                    const color = f.direction === 'increased' ? '#00ff88' : '#ff4466';
+                    const arrow = f.direction === 'increased' ? '↑' : '↓';
+                    html += `<div style="padding:2px 0; font-size:13px; color:${color};">${arrow} ${f.name}: ${f.value.toFixed(2)}</div>`;
+                });
+            }
+            document.getElementById('xai').innerHTML = html;
+        }
+    });
+}
+
+// Update every 3 seconds
+updateDashboard();
+setInterval(updateDashboard, 3000);
+</script>
+
+</body>
+</html>

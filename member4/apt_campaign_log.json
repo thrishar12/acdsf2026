@@ -1,0 +1,62 @@
+[
+  {
+    "timestamp": "2026-08-16T15:44:46.934236+00:00",
+    "stage": 1,
+    "name": "Reconnaissance",
+    "attack_id": "T1592",
+    "technique_name": "Gather Victim Host Information",
+    "target": "ENER-SRV1",
+    "result": "simulated",
+    "detail": "no direct SDN-observable effect"
+  },
+  {
+    "timestamp": "2026-08-16T15:44:47.944790+00:00",
+    "stage": 2,
+    "name": "Initial Access",
+    "attack_id": "T1566.001",
+    "technique_name": "Spearphishing Attachment",
+    "target": "ENER-SRV1",
+    "result": "simulated",
+    "detail": "no direct SDN-observable effect"
+  },
+  {
+    "timestamp": "2026-08-16T15:44:48.953093+00:00",
+    "stage": 3,
+    "name": "Credential Access",
+    "attack_id": "T1003",
+    "technique_name": "OS Credential Dumping",
+    "target": "ENER-SRV1",
+    "result": "simulated",
+    "detail": "no direct SDN-observable effect"
+  },
+  {
+    "timestamp": "2026-08-16T15:44:49.965941+00:00",
+    "stage": 4,
+    "name": "Lateral Movement",
+    "attack_id": "T1021.002",
+    "technique_name": "SMB/Windows Admin Shares",
+    "target": "ENER-SRV1",
+    "result": "simulated",
+    "detail": "no direct SDN-observable effect"
+  },
+  {
+    "timestamp": "2026-08-16T15:44:50.978597+00:00",
+    "stage": 5,
+    "name": "Persistence",
+    "attack_id": "T1053.005",
+    "technique_name": "Scheduled Task",
+    "target": "ENER-SRV1",
+    "result": "simulated",
+    "detail": "no direct SDN-observable effect"
+  },
+  {
+    "timestamp": "2026-08-16T15:44:56.228606+00:00",
+    "stage": 6,
+    "name": "Exfiltration",
+    "attack_id": "T1041",
+    "technique_name": "Exfiltration Over C2 Channel",
+    "target": "ENER-SRV1",
+    "result": "sdn_block_success",
+    "detail": "{\"edges_removed\": 1, \"node_id\": \"ENER-SRV1\", \"status\": \"blocked\"}"
+  }
+]
